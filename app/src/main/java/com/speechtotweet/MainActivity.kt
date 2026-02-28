@@ -54,14 +54,32 @@ class MainActivity : AppCompatActivity() {
         SpeechLanguage("Chinese", "zh-CN"),
         SpeechLanguage("Arabic", "ar-SA"),
         SpeechLanguage("Hindi", "hi-IN"),
-        SpeechLanguage("Russian", "ru-RU")
+        SpeechLanguage("Russian", "ru-RU"),
+        SpeechLanguage("Czech", "cs-CZ"),
+        SpeechLanguage("Dutch", "nl-NL"),
+        SpeechLanguage("Swedish", "sv-SE"),
+        SpeechLanguage("Romanian", "ro-RO"),
+        SpeechLanguage("Hungarian", "hu-HU"),
+        SpeechLanguage("Thai", "th-TH"),
+        SpeechLanguage("Vietnamese", "vi-VN"),
+        SpeechLanguage("Indonesian", "id-ID")
     )
 
     private val models = listOf(
-        AiModel("GPT-OSS 120B", "openai/gpt-oss-120b", "Best quality for translation"),
-        AiModel("Compound (auto)", "groq/compound", "Smart routing — picks best model"),
-        AiModel("Llama 3.3 70B", "llama-3.3-70b-versatile", "Good balance of speed and quality"),
-        AiModel("Llama 3.1 8B", "llama-3.1-8b-instant", "Fastest, lower quality")
+        AiModel("\uD83E\uDD47 Kimi K2 1T", "moonshotai/kimi-k2-instruct", "Best overall — 1 trillion params, MoE"),
+        AiModel("\uD83E\uDD48 GPT-OSS 120B", "openai/gpt-oss-120b", "OpenAI open-source, great translation"),
+        AiModel("\uD83E\uDD49 DeepSeek R1 70B", "deepseek-r1-distill-llama-70b", "Reasoning model, thinks step-by-step"),
+        AiModel("\u2728 Compound (auto)", "groq/compound", "Smart routing — auto-picks best model"),
+        AiModel("\u2728 Compound Mini", "groq/compound-mini", "Lighter smart routing, faster"),
+        AiModel("\uD83D\uDE80 Llama 4 Maverick", "meta-llama/llama-4-maverick-17b-128e-instruct", "Meta latest, 128 experts MoE"),
+        AiModel("\uD83D\uDE80 Llama 4 Scout", "meta-llama/llama-4-scout-17b-16e-instruct", "Meta latest, fast 16 experts"),
+        AiModel("\uD83D\uDCAC Qwen3 32B", "qwen/qwen3-32b", "Alibaba, strong multilingual"),
+        AiModel("\uD83D\uDCAC GPT-OSS 20B", "openai/gpt-oss-20b", "OpenAI lighter, very fast"),
+        AiModel("\u26A1 Llama 3.3 70B", "llama-3.3-70b-versatile", "Solid all-rounder, 128k context"),
+        AiModel("\u26A1 Mistral Saba 24B", "mistral-saba-24b", "Mistral, good for European languages"),
+        AiModel("\u26A1 Gemma 2 9B", "gemma2-9b-it", "Google, compact and capable"),
+        AiModel("\uD83C\uDFC3 Llama 3.1 8B", "llama-3.1-8b-instant", "Fastest, 560 tok/s, basic quality"),
+        AiModel("\uD83C\uDFC3 Llama 3 8B", "llama3-8b-8192", "Ultra fast, lightweight")
     )
 
     private var selectedLanguage = languages[0]
@@ -89,7 +107,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupModelSpinner() {
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        val savedId = prefs.getString(KEY_MODEL, "openai/gpt-oss-120b") ?: "openai/gpt-oss-120b"
+        val savedId = prefs.getString(KEY_MODEL, models[0].id) ?: models[0].id
         val savedIndex = models.indexOfFirst { it.id == savedId }.coerceAtLeast(0)
         selectedModel = models[savedIndex]
 
@@ -109,8 +127,9 @@ class MainActivity : AppCompatActivity() {
                 view.text = "${models[position].name}\n${models[position].description}"
                 view.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
                 view.setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.bg_card))
-                view.setPadding(32, 24, 32, 24)
+                view.setPadding(32, 28, 32, 28)
                 view.textSize = 14f
+                view.setLineSpacing(4f, 1f)
                 return view
             }
         }
@@ -274,9 +293,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onBeginningOfSpeech() {}
-
             override fun onRmsChanged(rmsdB: Float) {}
-
             override fun onBufferReceived(buffer: ByteArray?) {}
 
             override fun onEndOfSpeech() {
