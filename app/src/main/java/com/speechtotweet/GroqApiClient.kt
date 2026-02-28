@@ -12,16 +12,19 @@ class GroqApiClient(private val apiKey: String) {
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(90, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
     companion object {
         private const val API_URL = "https://api.groq.com/openai/v1/chat/completions"
-        private const val MODEL = "llama-3.3-70b-versatile"
     }
 
-    fun translateAndFormatTweet(speechText: String, sourceLanguage: String = "Ukrainian"): Result<String> {
+    fun translateAndFormatTweet(
+        speechText: String,
+        sourceLanguage: String = "Ukrainian",
+        model: String = "openai/gpt-oss-120b"
+    ): Result<String> {
         return try {
             val systemPrompt = """You are a social media expert and translator. Your task:
 1. The user's input is spoken in $sourceLanguage and transcribed by speech recognition.
@@ -48,7 +51,7 @@ class GroqApiClient(private val apiKey: String) {
             }
 
             val body = JSONObject().apply {
-                put("model", MODEL)
+                put("model", model)
                 put("messages", messagesArray)
                 put("temperature", 0.7)
                 put("max_tokens", 350)

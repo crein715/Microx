@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 data class SpeechLanguage(val name: String, val code: String)
+data class AiModel(val name: String, val id: String, val description: String)
 
 class MainActivity : AppCompatActivity() {
 
@@ -56,13 +57,22 @@ class MainActivity : AppCompatActivity() {
         SpeechLanguage("Russian", "ru-RU")
     )
 
+    private val models = listOf(
+        AiModel("GPT-OSS 120B", "openai/gpt-oss-120b", "Best quality for translation"),
+        AiModel("Compound (auto)", "groq/compound", "Smart routing — picks best model"),
+        AiModel("Llama 3.3 70B", "llama-3.3-70b-versatile", "Good balance of speed and quality"),
+        AiModel("Llama 3.1 8B", "llama-3.1-8b-instant", "Fastest, lower quality")
+    )
+
     private var selectedLanguage = languages[0]
+    private var selectedModel = models[0]
 
     companion object {
         private const val PERMISSION_REQUEST_CODE = 100
         private const val PREFS_NAME = "speech_to_tweet_prefs"
         private const val KEY_API_KEY = "groq_api_key"
         private const val KEY_LANGUAGE = "selected_language"
+        private const val KEY_MODEL = "selected_model"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,9 +81,56 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         loadApiKey()
+        setupModelSpinner()
         setupLanguageSpinner()
         setupListeners()
         checkPermissions()
+    }
+
+    private fun setupModelSpinner() {
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val savedId = prefs.getString(KEY_MODEL, "openai/gpt-oss-120b") ?: "openai/gpt-oss-120b"
+        val savedIndex = models.indexOfFirst { it.id == savedId }.coerceAtLeast(0)
+        selectedModel = models[savedIndex]
+
+        val adapter = object : ArrayAdapter<AiModel>(
+            this, android.R.layout.simple_spinner_item, models
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent) as TextView
+                view.text = models[position].name
+                view.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                view.textSize = 15f
+                return view
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getDropDownView(position, convertView, parent) as TextView
+                view.text = "${models[position].name}\n${models[position].description}"
+                view.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                view.setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.bg_card))
+                view.setPadding(32, 24, 32, 24)
+                view.textSize = 14f
+                return view
+            }
+        }
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerModel.adapter = adapter
+        binding.spinnerModel.setSelection(savedIndex)
+        binding.tvModelDesc.text = selectedModel.description
+
+        binding.spinnerModel.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedModel = models[position]
+                binding.tvModelDesc.text = selectedModel.description
+                getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                    .edit()
+                    .putString(KEY_MODEL, selectedModel.id)
+                    .apply()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
 
     private fun setupLanguageSpinner() {
@@ -356,10 +413,11 @@ class MainActivity : AppCompatActivity() {
         hideError()
 
         val sourceLang = selectedLanguage.name
+        val modelId = selectedModel.id
 
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
-                GroqApiClient(apiKey).translateAndFormatTweet(speechText, sourceLang)
+                GroqApiClient(apiKey).translateAndFormatTweet(speechText, sourceLang, modelId)
             }
 
             binding.layoutLoading.visibility = View.GONE

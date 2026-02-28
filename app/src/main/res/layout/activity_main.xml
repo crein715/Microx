@@ -74,6 +74,44 @@
 
         </LinearLayout>
 
+        <!-- Model Selector -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AI Model"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/spinnerModel"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_input"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:popupBackground="@color/bg_card" />
+
+            <TextView
+                android:id="@+id/tvModelDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Best quality for translation"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:layout_marginTop="6dp" />
+
+        </LinearLayout>
+
         <!-- Language Selector -->
         <LinearLayout
             android:layout_width="match_parent"
