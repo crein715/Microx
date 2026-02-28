@@ -21,19 +21,20 @@ class GroqApiClient(private val apiKey: String) {
         private const val MODEL = "llama-3.3-70b-versatile"
     }
 
-    fun translateAndFormatTweet(speechText: String): Result<String> {
+    fun translateAndFormatTweet(speechText: String, sourceLanguage: String = "Ukrainian"): Result<String> {
         return try {
-            val systemPrompt = """You are a social media expert. Your task:
-1. If the input text is NOT in English, translate it to English first.
-2. Format the translated (or original English) text as a Twitter/X post.
-3. The tweet MUST be 280 characters or fewer.
-4. Make it engaging, concise, and natural-sounding.
-5. Add relevant hashtags (2-4 max) if appropriate.
-6. Use emojis sparingly if they fit the tone.
-7. Do NOT add quotes around the tweet.
-8. Return ONLY the tweet text, nothing else — no explanation, no preamble."""
+            val systemPrompt = """You are a social media expert and translator. Your task:
+1. The user's input is spoken in $sourceLanguage and transcribed by speech recognition.
+2. Translate the text from $sourceLanguage to English (if it's already English, just clean it up).
+3. Format the English text as a Twitter/X post.
+4. The tweet MUST be 280 characters or fewer.
+5. Make it engaging, concise, and natural-sounding.
+6. Add relevant hashtags (2-4 max) if appropriate.
+7. Use emojis sparingly if they fit the tone.
+8. Do NOT add quotes around the tweet.
+9. Return ONLY the tweet text, nothing else — no explanation, no preamble, no labels."""
 
-            val userMessage = "Convert this speech to a tweet:\n\n\"$speechText\""
+            val userMessage = "Convert this $sourceLanguage speech to an English tweet:\n\n\"$speechText\""
 
             val messagesArray = JSONArray().apply {
                 put(JSONObject().apply {

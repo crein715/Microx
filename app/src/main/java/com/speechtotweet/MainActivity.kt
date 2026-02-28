@@ -13,7 +13,11 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -23,7 +27,8 @@ import com.speechtotweet.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
+
+data class SpeechLanguage(val name: String, val code: String)
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,10 +37,32 @@ class MainActivity : AppCompatActivity() {
     private var isListening = false
     private var pulseAnimator: AnimatorSet? = null
 
+    private val languages = listOf(
+        SpeechLanguage("Ukrainian", "uk-UA"),
+        SpeechLanguage("English (US)", "en-US"),
+        SpeechLanguage("English (UK)", "en-GB"),
+        SpeechLanguage("Spanish", "es-ES"),
+        SpeechLanguage("French", "fr-FR"),
+        SpeechLanguage("German", "de-DE"),
+        SpeechLanguage("Italian", "it-IT"),
+        SpeechLanguage("Portuguese", "pt-BR"),
+        SpeechLanguage("Polish", "pl-PL"),
+        SpeechLanguage("Turkish", "tr-TR"),
+        SpeechLanguage("Japanese", "ja-JP"),
+        SpeechLanguage("Korean", "ko-KR"),
+        SpeechLanguage("Chinese", "zh-CN"),
+        SpeechLanguage("Arabic", "ar-SA"),
+        SpeechLanguage("Hindi", "hi-IN"),
+        SpeechLanguage("Russian", "ru-RU")
+    )
+
+    private var selectedLanguage = languages[0]
+
     companion object {
         private const val PERMISSION_REQUEST_CODE = 100
         private const val PREFS_NAME = "speech_to_tweet_prefs"
         private const val KEY_API_KEY = "groq_api_key"
+        private const val KEY_LANGUAGE = "selected_language"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +71,53 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         loadApiKey()
+        setupLanguageSpinner()
         setupListeners()
         checkPermissions()
+    }
+
+    private fun setupLanguageSpinner() {
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val savedCode = prefs.getString(KEY_LANGUAGE, "uk-UA") ?: "uk-UA"
+        val savedIndex = languages.indexOfFirst { it.code == savedCode }.coerceAtLeast(0)
+        selectedLanguage = languages[savedIndex]
+
+        val adapter = object : ArrayAdapter<SpeechLanguage>(
+            this, android.R.layout.simple_spinner_item, languages
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent) as TextView
+                view.text = "${languages[position].name}  (${languages[position].code})"
+                view.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                view.textSize = 15f
+                return view
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getDropDownView(position, convertView, parent) as TextView
+                view.text = "${languages[position].name}  (${languages[position].code})"
+                view.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                view.setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.bg_card))
+                view.setPadding(32, 24, 32, 24)
+                view.textSize = 15f
+                return view
+            }
+        }
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerLanguage.adapter = adapter
+        binding.spinnerLanguage.setSelection(savedIndex)
+
+        binding.spinnerLanguage.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedLanguage = languages[position]
+                getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                    .edit()
+                    .putString(KEY_LANGUAGE, selectedLanguage.code)
+                    .apply()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
 
     private fun loadApiKey() {
@@ -210,9 +282,13 @@ class MainActivity : AppCompatActivity() {
             override fun onEvent(eventType: Int, params: Bundle?) {}
         })
 
+        val langCode = selectedLanguage.code
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, langCode)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, langCode)
+            putExtra("android.speech.extra.EXTRA_ADDITIONAL_LANGUAGES", arrayOf(langCode))
+            putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, langCode)
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
         }
@@ -279,9 +355,11 @@ class MainActivity : AppCompatActivity() {
         binding.layoutTweet.visibility = View.GONE
         hideError()
 
+        val sourceLang = selectedLanguage.name
+
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
-                GroqApiClient(apiKey).translateAndFormatTweet(speechText)
+                GroqApiClient(apiKey).translateAndFormatTweet(speechText, sourceLang)
             }
 
             binding.layoutLoading.visibility = View.GONE
