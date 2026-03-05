@@ -1,0 +1,12 @@
+{
+  "name": "microx-saver",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc && cp manifest.json popup.html popup.css content.css dist/ && cp -r icons dist/",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/chrome": "latest"
+  }
+}

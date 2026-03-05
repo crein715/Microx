@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="popup.css">
+  <title>Microx Saver</title>
+</head>
+<body>
+  <div class="microx-popup">
+    <header class="microx-header">
+      <div class="microx-header-left">
+        <svg class="microx-logo" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1d9bf0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span class="microx-title">Microx Saver</span>
+      </div>
+      <span class="microx-count" id="itemCount">0 saved</span>
+    </header>
+
+    <div class="microx-search-bar">
+      <svg class="microx-search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" class="microx-search-input" placeholder="Filter saved items...">
+    </div>
+
+    <div class="microx-filters">
+      <button class="microx-filter-btn active" data-filter="all">All</button>
+      <button class="microx-filter-btn" data-filter="gif">GIFs</button>
+      <button class="microx-filter-btn" data-filter="image">Images</button>
+    </div>
+
+    <div class="microx-gallery" id="gallery">
+      <div class="microx-empty" id="emptyState">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#71767b" stroke-width="1.5">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <p>No saved media yet</p>
+        <span>Browse X and click the bookmark icon on tweets with images or GIFs</span>
+      </div>
+    </div>
+
+    <footer class="microx-footer">
+      <button class="microx-footer-btn" id="copyAllBtn">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        Copy All URLs
+      </button>
+      <button class="microx-footer-btn microx-danger" id="clearAllBtn">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        Clear All
+      </button>
+    </footer>
+  </div>
+
+  <div class="microx-confirm-overlay" id="confirmOverlay">
+    <div class="microx-confirm-dialog">
+      <p>Delete all saved media?</p>
+      <span>This action cannot be undone.</span>
+      <div class="microx-confirm-actions">
+        <button class="microx-confirm-cancel" id="confirmCancel">Cancel</button>
+        <button class="microx-confirm-delete" id="confirmDelete">Delete All</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="microx-toast" id="toast"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

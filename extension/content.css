@@ -1,0 +1,86 @@
+.microx-save-wrapper {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.microx-save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34.75px;
+  height: 34.75px;
+  border: none;
+  background: transparent;
+  border-radius: 9999px;
+  cursor: pointer;
+  color: rgb(113, 118, 123);
+  transition: all 0.2s ease;
+  padding: 0;
+  margin-left: 4px;
+}
+
+.microx-save-btn:hover {
+  background-color: rgba(29, 155, 240, 0.1);
+  color: rgb(29, 155, 240);
+}
+
+.microx-save-btn.microx-saved {
+  color: rgb(29, 155, 240);
+}
+
+.microx-save-btn.microx-saved .microx-save-icon svg {
+  fill: rgb(29, 155, 240);
+  stroke: rgb(29, 155, 240);
+}
+
+.microx-save-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.microx-save-icon svg {
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+.microx-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgb(29, 155, 240);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: microx-fade-in 0.15s ease-out;
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.microx-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: rgb(29, 155, 240) transparent transparent transparent;
+}
+
+@keyframes microx-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
