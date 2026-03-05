@@ -1,0 +1,15 @@
+{
+  "name": "microx-extension",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "bash build.sh",
+    "watch": "bash build.sh --watch"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@types/chrome": "^0.0.287",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.0"
+  }
+}

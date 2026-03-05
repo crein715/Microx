@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MicroX Saved Media</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 380px;
+      min-height: 480px;
+      max-height: 580px;
+      background: #000;
+      color: #e7e9ea;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow-y: auto;
+    }
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #2f3336;
+    }
+    .header h1 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .header .count {
+      font-size: 12px;
+      color: #71767b;
+      font-weight: 500;
+    }
+    .clear-btn {
+      background: none;
+      border: 1px solid #2f3336;
+      color: #f4212e;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .clear-btn:hover {
+      background: rgba(244, 33, 46, 0.1);
+      border-color: rgba(244, 33, 46, 0.4);
+    }
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+    }
+    .empty-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+    .empty p {
+      color: #71767b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      padding: 2px;
+    }
+    .media-card {
+      position: relative;
+      aspect-ratio: 1;
+      overflow: hidden;
+      cursor: pointer;
+      background: #16181c;
+    }
+    .media-card img,
+    .media-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.2s;
+    }
+    .media-card:hover img,
+    .media-card:hover video {
+      transform: scale(1.05);
+    }
+    .media-card .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(transparent 50%, rgba(0,0,0,0.7));
+      opacity: 0;
+      transition: opacity 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 8px;
+    }
+    .media-card:hover .overlay {
+      opacity: 1;
+    }
+    .media-card .author {
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+    }
+    .media-card .type-badge {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: rgba(29, 155, 240, 0.9);
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .media-card .remove-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.7);
+      border: none;
+      color: #e7e9ea;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s, background 0.15s;
+    }
+    .media-card:hover .remove-btn {
+      opacity: 1;
+    }
+    .remove-btn:hover {
+      background: rgba(244, 33, 46, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>MicroX</h1>
+      <span class="count" id="count"></span>
+    </div>
+    <button class="clear-btn" id="clearAll">Clear All</button>
+  </div>
+  <div id="content"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

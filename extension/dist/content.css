@@ -1,0 +1,127 @@
+/* === Action bar save-all button === */
+.microx-save-wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+  position: relative;
+}
+
+.microx-save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: #71767b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.microx-save-btn:hover {
+  background: rgba(29, 155, 240, 0.1);
+  color: #1d9bf0;
+}
+
+.microx-save-btn.microx-saved {
+  color: #1d9bf0;
+}
+
+/* === Per-media overlay button === */
+.microx-media-overlay {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.microx-media-container:hover .microx-media-overlay {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .microx-media-overlay {
+    opacity: 0.8;
+  }
+}
+
+.microx-media-save-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e7e9ea;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.microx-media-save-btn:hover {
+  background: rgba(29, 155, 240, 0.85);
+  border-color: rgba(29, 155, 240, 0.5);
+}
+
+.microx-media-save-btn.microx-saved {
+  background: rgba(29, 155, 240, 0.85);
+  color: white;
+}
+
+/* === GIF badge === */
+.microx-gif-badge {
+  background: rgba(29, 155, 240, 0.9);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* === Tooltip === */
+.microx-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1d9bf0;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: microx-tooltip-in 0.15s ease-out forwards;
+  z-index: 20;
+}
+
+.microx-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: #1d9bf0;
+}
+
+@keyframes microx-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
